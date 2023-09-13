@@ -17,10 +17,13 @@
 #     You should have received a copy of the GNU General Public License
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-
+import os.path
+import rioxarray as rio
 import xarray as xr
 
 class CHUKIO:
+
+    SUPPORTED_FORMATS = [".nc", ".tif", ".tiff", ".geotif", ".geotiff"]
 
     def __init__(self, chuk_grid_path=None):
         self.chuk_grid_ds = xr.open_dataset(chuk_grid_path) if chuk_grid_path else None
@@ -30,12 +33,13 @@ class CHUKIO:
             raise Exception("Please initialise CHUK API with path to CHUK grid")
 
     def check_path(self, path):
-        if not path.endswith(".nc"):
-            raise Exception("Currently only netcdf4 files (filenames ending in .nc) are supported")
+        suffix = os.path.splitext(path)[1].lower()
+        if not suffix in CHUKIO.SUPPORTED_FORMATS:
+            raise Exception(f"Supported formats {','.join(CHUKIO.SUPPORTED_FORMATS)}")
 
     def load(self, from_path, with_latlon=False, with_latlon_bnds=False):
         self.check_path(from_path)
-        ds = xr.open_dataset(from_path)
+        ds = rio.open_rasterio(from_path)
         ds = self.adjust_latlon(ds, with_latlon, with_latlon_bnds)
         return ds
 
@@ -55,7 +59,7 @@ class CHUKIO:
             ds["lon"] = self.chuk_grid_ds["lon"]
             ds["lat"] = self.chuk_grid_ds["lat"]
 
-        if with_latlon and ("lat_bnds" not in ds or "lon_bnds" not in ds):
+        if with_latlon_bnds and ("lat_bnds" not in ds or "lon_bnds" not in ds):
             self.check_grid_loaded()
             ds["lon_bnds"] = self.chuk_grid_ds["lon_bnds"]
             ds["lat_bnds"] = self.chuk_grid_ds["lat_bnds"]
@@ -65,3 +69,14 @@ class CHUKIO:
     def save(self, ds, to_path, with_latlon=False, with_latlon_bnds=False):
         ds = self.adjust_latlon(ds, with_latlon, with_latlon_bnds)
         ds.to_netcdf(to_path) # TODO, encodings
+
+    def save_as_geotif(self, da, to_path):
+        da.rio.to_raster(to_path)
+
+
+if __name__ == '__main__':
+    cio = CHUKIO("../../EOCIS-CHUK-GRID-EXAMPLE-1000M-v0.3.nc")
+    ds = cio.load("../../1000m_dem.nc")
+    cio.save_as_geotif(ds["ASTER_GDEM_DEM"], "../../1000m_dem.tif")
+    ds2 = cio.load("../../1000m_dem.tif",with_latlon=True)
+    print(ds2)
