@@ -20,10 +20,12 @@
 import os.path
 import rioxarray as rio
 import xarray as xr
+import copy
 
 class CHUKIO:
 
-    SUPPORTED_FORMATS = [".nc", ".tif", ".tiff", ".geotif", ".geotiff"]
+    GEOTIFF_SUFFIXES = [".tif", ".tiff", ".geotif", ".geotiff"]
+    SUPPORTED_FORMATS = [".nc"] + GEOTIFF_SUFFIXES
 
     def __init__(self, chuk_grid_path=None):
         self.chuk_grid_ds = xr.open_dataset(chuk_grid_path) if chuk_grid_path else None
@@ -37,9 +39,21 @@ class CHUKIO:
         if not suffix in CHUKIO.SUPPORTED_FORMATS:
             raise Exception(f"Supported formats {','.join(CHUKIO.SUPPORTED_FORMATS)}")
 
+    def is_geotif(self, path):
+        suffix = os.path.splitext(path)[1].lower()
+        return suffix in CHUKIO.GEOTIFF_SUFFIXES
+
     def load(self, from_path, with_latlon=False, with_latlon_bnds=False):
         self.check_path(from_path)
-        ds = rio.open_rasterio(from_path)
+        if self.is_geotif(from_path):
+            da = rio.open_rasterio(from_path)
+            variable_name = da.attrs["__variable__"]
+            variable_attrs = da.attrs["__variable_attrs__"]
+            for attr_name in da.attrs:
+                ds_attrs = da.attrs
+            ds = xr.Dataset({variable_name:da},attrs=ds_attrs)
+        else:
+            ds = rio.open_rasterio(from_path)
         ds = self.adjust_latlon(ds, with_latlon, with_latlon_bnds)
         return ds
 
@@ -70,13 +84,15 @@ class CHUKIO:
         ds = self.adjust_latlon(ds, with_latlon, with_latlon_bnds)
         ds.to_netcdf(to_path) # TODO, encodings
 
-    def save_as_geotif(self, da, to_path):
-        da.rio.to_raster(to_path)
+    def save_as_geotif(self, ds, variable_name, to_path):
+        tags = copy.deepcopy(ds.attrs)
+        tags["__variable__"] = variable_name
+        ds[variable_name].rio.to_raster(to_path, tags=tags)
 
 
 if __name__ == '__main__':
     cio = CHUKIO("../../EOCIS-CHUK-GRID-EXAMPLE-1000M-v0.3.nc")
     ds = cio.load("../../1000m_dem.nc")
-    cio.save_as_geotif(ds["ASTER_GDEM_DEM"], "../../1000m_dem.tif")
-    ds2 = cio.load("../../1000m_dem.tif",with_latlon=True)
-    print(ds2)
+    cio.save_as_geotif(ds, "ASTER_GDEM_DEM", "../../1000m_dem.tif")
+    ds2 = cio.load("../../1000m_dem.tif",with_latlon=False)
+    print(ds2["ASTER_GDEM_DEM"].data)
