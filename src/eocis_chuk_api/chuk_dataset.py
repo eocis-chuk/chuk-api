@@ -18,11 +18,17 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os.path
-import rioxarray as rio
+
 import xarray as xr
 import copy
+import logging
 
-class CHUKIO:
+try:
+    import rioxarray as rio
+except Exception as ex:
+    logging.warning("rioxarray is not available, save_as_geotiff will not be available")
+
+class CHUKDataSet:
 
     GEOTIFF_SUFFIXES = [".tif", ".tiff", ".geotif", ".geotiff"]
     SUPPORTED_FORMATS = [".nc"] + GEOTIFF_SUFFIXES
@@ -36,7 +42,7 @@ class CHUKIO:
 
     def check_path(self, path):
         suffix = os.path.splitext(path)[1].lower()
-        if not suffix in CHUKIO.SUPPORTED_FORMATS:
+        if not suffix in CHUKDataSet.SUPPORTED_FORMATS:
             raise Exception(f"Supported formats {','.join(CHUKIO.SUPPORTED_FORMATS)}")
 
     def is_geotif(self, path):
