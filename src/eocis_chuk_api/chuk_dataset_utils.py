@@ -18,16 +18,10 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import xarray as xr
-
-# geotiff support via rioxarray is optional
-rioxarray_support = False
-try:
-    import rioxarray as rio
-    rioxarray_support = True
-except Exception as ex:
-    pass
+import rioxarray as rio
 
 from chukmeta import CHUKMETA
+
 
 class CHUKDataSetUtils:
 
@@ -108,8 +102,6 @@ class CHUKDataSetUtils:
         :param variable_name: the name of the variable to save from the dataset
         :param to_path: the path to save the geotiff file to
         """
-        if not rioxarray_support:
-            raise Exception("rioxarray is not available, CHUKdataSet.save_as_geotiff will not be available")
         if ds.rio.crs is None:
             # this is important if the dataset is later exported
             ds = ds.rio.write_crs("EPSG:27700")

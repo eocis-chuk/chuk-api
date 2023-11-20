@@ -2,6 +2,49 @@
 
 Python API for working with CHUK datasets
 
+## Installation
+
+This package depends on rioxarray:
+
+```
+conda create -n chuk_api_env python=3.10
+conda activate chuk_api_env
+conda install rioxarray
+conda install netcdf4
+pip install .
+```
+
+Download CHUK grid reference file
+
+```
+wget https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-100M-v0.4.nc
+```
+
+## Usage
+
+### Export a CHUK variable from NetCDF4 to geotiff
+
+```python
+from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+
+utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
+ds = utils.load("my_chuk_dataset.nc")
+utils.save_as_geotif(ds, "my_variable", "my_variable.tif")
+```
+
+### Check a dataset against the reference grid
+
+```python
+from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+
+utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
+ds = utils.load("my_chuk_dataset.nc")
+try:
+    utils.check(ds)
+except Exception as ex:
+    print(ex)
+```
+
 ## Objectives
 
 * Use xarray datasets and data arrays as the underlying way to input and output data
