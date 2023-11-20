@@ -2,7 +2,7 @@
 
 Python API for working with CHUK datasets
 
-Requirements
+## Objectives
 
 * Use xarray datasets and data arrays as the underlying way to input and output data
 * Provide the CHUK grid (100m, EPSG:27700) as a reference and a template for creating data
@@ -14,3 +14,11 @@ Requirements
   * precision controlled by the data writer
   * chunking can be managed by the API to try to support timeseries extraction
 * Provide documentation and code examples
+
+## Currently Supported functionality
+
+* Load from netcdf4
+* Check dimensions against reference grid
+* Export CHUK data to geotiff, preserving metadata
+
+
