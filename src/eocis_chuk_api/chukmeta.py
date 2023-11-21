@@ -22,6 +22,29 @@ import numpy as np
 
 class CHUKMETA:
 
+    expected_dataset_metadata_keys = {
+        "title",
+        "institution",
+        "version",
+        "Convention",
+        "summary",
+        "license",
+        "history",
+        "comment",
+        "creator_url",
+        "creator_name",
+        "creator_email",
+        "creator_processing_institution",
+        "publisher_url",
+        "publisher_name",
+        "publisher_email",
+        "acknowledgement",
+        "date_created",
+        "creation_date",
+        "uuid",
+        "spatial_resolution"
+    }
+
     @staticmethod
     def __decode4json(o):
         if isinstance(o,dict):
@@ -53,6 +76,13 @@ class CHUKMETA:
 
     @staticmethod
     def check(ds):
-        pass # TODO check for missing or invalid CF/CHUK metadata
+        warnings = []
+        errors = []
+        for key in CHUKMETA.expected_dataset_metadata_keys:
+            if key not in ds.attrs:
+                warnings.append(("missing_global_attribute",key))
+
+        return warnings, errors
+
 
 
