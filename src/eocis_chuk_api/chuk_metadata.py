@@ -20,7 +20,7 @@
 import copy
 import numpy as np
 
-class CHUKMETA:
+class CHUKMetadata:
 
     expected_dataset_metadata_keys = {
         "title",
@@ -49,18 +49,18 @@ class CHUKMETA:
     def __decode4json(o):
         if isinstance(o,dict):
             for key in o:
-                o[key] = CHUKMETA.__decode4json(o[key])
+                o[key] = CHUKMetadata.__decode4json(o[key])
             return o
         elif isinstance(o,list):
             for idx in range(len(o)):
-                o[idx] = CHUKMETA.__decode4json(o[idx])
+                o[idx] = CHUKMetadata.__decode4json(o[idx])
             return o
         elif isinstance(o,np.float32):
             return float(o)
         elif isinstance(o,np.int32) or isinstance(o,np.int16) or isinstance(o,np.int8):
             return int(o)
         elif isinstance(o,np.ndarray):
-            return CHUKMETA.__decode4json(o.tolist())
+            return CHUKMetadata.__decode4json(o.tolist())
         else:
             return o
 
@@ -72,13 +72,13 @@ class CHUKMETA:
         metadata = {}
         metadata["__variable__"] = variable_metadata
         metadata["__dataset__"] = copy.deepcopy(ds.attrs)
-        return CHUKMETA.__decode4json(metadata)
+        return CHUKMetadata.__decode4json(metadata)
 
     @staticmethod
     def check(ds):
         warnings = []
         errors = []
-        for key in CHUKMETA.expected_dataset_metadata_keys:
+        for key in CHUKMetadata.expected_dataset_metadata_keys:
             if key not in ds.attrs:
                 warnings.append(("missing_global_attribute",key))
 

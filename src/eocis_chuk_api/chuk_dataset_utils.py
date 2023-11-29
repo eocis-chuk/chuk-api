@@ -21,7 +21,7 @@ import xarray as xr
 import uuid
 import datetime
 
-from chukmeta import CHUKMETA
+from .chuk_metadata import CHUKMetadata
 
 
 class CHUKDataSetUtils:
@@ -44,6 +44,14 @@ class CHUKDataSetUtils:
         :return: 2-tuple containing xarray.DataArray objects (lats,lons)
         """
         return (self.chuk_grid_ds.lat, self.chuk_grid_ds.lon)
+
+    def get_grid_shape(self):
+        """
+        Return the chuk grid shape (y,x)
+
+        :return: 2-tuple containing the grid (height, width)
+        """
+        return self.chuk_grid_ds.lat.shape
 
     def create_new_dataset(self,
                            title="A CHUK dataset",
@@ -172,8 +180,11 @@ class CHUKDataSetUtils:
         if add_latlon_bnds:
             ds = self.add_latlon_bnds(ds)
 
-        ds.to_netcdf(to_path, encoding=encodings)
+        if ds.rio.crs is None:
+            # this is important if the dataset is later exported
+            ds = ds.rio.write_crs("EPSG:27700")
 
+        ds.to_netcdf(to_path, encoding=encodings)
 
     def check(self, ds):
         """
@@ -185,7 +196,7 @@ class CHUKDataSetUtils:
         """
 
         # perform metadata checks
-        warnings, errors = CHUKMETA.check(ds)
+        warnings, errors = CHUKMetadata.check(ds)
 
         # check the dimensions are correct, compared to the grid
         for v in ["x","y"]:
@@ -196,8 +207,6 @@ class CHUKDataSetUtils:
 
         return warnings, errors
 
-
-
     def add_latlon(self, ds):
         """
         Add lat and lon 2D arrays from the reference grid
@@ -207,7 +216,6 @@ class CHUKDataSetUtils:
         ds["lon"] = self.chuk_grid_ds["lon"]
         ds["lat"] = self.chuk_grid_ds["lat"]
 
-
     def add_latlon_bnds(self,ds):
         """
         Add lat and lon 2D bounds from the reference grid
@@ -216,7 +224,6 @@ class CHUKDataSetUtils:
         """
         ds["lon_bnds"] = self.chuk_grid_ds["lon_bnds"]
         ds["lat_bnds"] = self.chuk_grid_ds["lat_bnds"]
-
 
     def save_as_geotif(self, ds, variable_name, to_path):
         """
@@ -229,7 +236,7 @@ class CHUKDataSetUtils:
         if ds.rio.crs is None:
             # this is important if the dataset is later exported
             ds = ds.rio.write_crs("EPSG:27700")
-        tags = CHUKMETA.to_json(ds, variable_name)
+        tags = CHUKMetadata.to_json(ds, variable_name)
         ds[variable_name].rio.to_raster(to_path, tags=tags)
 
 

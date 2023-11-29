@@ -19,11 +19,18 @@
 
 import unittest
 import os
+import requests
 
 from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
 from eocis_chuk_api_tests.test_utils.test_data_generator import TestDataGenerator
+
 folder = os.path.split(__file__)[0]
 grid_path = os.path.join(folder,"..","..","..","EOCIS-CHUK-GRID-1000M-v0.4.nc")
+
+if not os.path.exists(grid_path):
+    r = requests.get("https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-1000M-v0.4.nc", allow_redirects=True)
+    with open(grid_path,"wb") as f:
+        f.write(r.content)
 
 class TestTiffExport(unittest.TestCase):
 
@@ -34,5 +41,6 @@ class TestTiffExport(unittest.TestCase):
         # https://www.ordnancesurvey.co.uk/blog/where-is-the-centre-of-great-britain
         ds = gen.create_distances(utils,54.0025,-2.5449)
         utils.save_as_geotif(ds,"distances","distances.tif")
+        utils.save(ds, "distances.nc")
 
 

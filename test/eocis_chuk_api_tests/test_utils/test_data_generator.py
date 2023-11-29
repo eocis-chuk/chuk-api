@@ -27,7 +27,7 @@ class TestDataGenerator:
 
     def create_distances(self, utils, from_lat, from_lon):
         """
-        Return a CHUK dataset containing distances from a central point, in km
+        Return a test CHUK dataset containing distances from a central point, in km
 
         :param utils: CHUKDatasetUtils instance
         :param from_lat: central point latitude
