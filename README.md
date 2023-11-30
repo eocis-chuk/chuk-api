@@ -77,10 +77,7 @@ from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
 
 utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-SQUIRRELPOPULATION-100M-v0.1.nc")
-try:
-    utils.check(ds)
-except Exception as ex:
-    print(ex)
+(warnings, errors) = utils.check(ds)
 ```
 
 ## Objectives
