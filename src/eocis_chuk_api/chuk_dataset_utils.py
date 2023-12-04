@@ -57,7 +57,7 @@ class CHUKDataSetUtils:
                            title="A CHUK dataset",
                            institution = "EOCIS CHUK",
                            version = "1.0",
-                           convention = "CF-1.10",
+                           Conventions = "CF-1.10",
                            summary = "A summary of this dataset",
                            license = "Creative Commons Licence by attribution (https://creativecommons.org/licenses/by/4.0/)",
                            history = "describe the history of this product",
@@ -68,24 +68,38 @@ class CHUKDataSetUtils:
                            creator_processing_institution = "the creator\'s institution",
                            date_created = None,
                            id = None,
+                           source = "",
+                           references = "",
+                           tracking_id = "",
+                           product_version = "",
+                           format_version = "",
+                           keywords = "",
+                           naming_authority = "",
+                           keywords_vocabulary = "",
+                           cdm_data_type = "",
+                           project = "",
+                           geospatial_lat_min = "",
+                           geospatial_lat_max = "",
+                           geospatial_lon_min = "",
+                           geospatial_lon_max = "",
+                           geospatial_vertical_min = "",
+                           geospatial_vertical_max = "",
+                           time_coverage_start = "",
+                           time_coverage_end = "",
+                           time_coverage_duration = "",
+                           time_coverage_resolution = "",
+                           standard_name_vocabulary = "",
+                           platform = "",
+                           sensor = "",
+                           geospatial_lat_units = "",
+                           geospatial_lon_units = "",
+                           geospatial_lat_resolution = "",
+                           geospatial_lon_resolution = "",
+                           key_variables = "",
                            **other_attributes):
         """
-        Create a new CHUK dataset
+        Create a new CHUK dataset using CF/CCI standard metadata
 
-        :param title: a title for the dataset
-        :param institution:
-        :param version:
-        :param convention:
-        :param summary:
-        :param license:
-        :param history:
-        :param comment:
-        :param creator_url:
-        :param creator_name:
-        :param creator_email:
-        :param creator_processing_institution:
-        :param date_created:
-        :param uuid:
         :return: an xarray.Dataset object
         """
         date_created = date_created if date_created else datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
@@ -94,7 +108,7 @@ class CHUKDataSetUtils:
             "title": title,
             "institution": institution,
             "version": version,
-            "Convention": convention,
+            "Conventions": Conventions,
             "summary": summary,
             "license": license,
             "history": history,
@@ -109,14 +123,39 @@ class CHUKDataSetUtils:
             "acknowledgement": "Funded by UK EOCIS. Use of these data should acknowledge EOCIS",
             "date_created": date_created,
             "creation_date": date_created,
-            "uuid": id,
-            "spatial_resolution": f"{self.grid_resolution}m"
+            "id": id,
+            "spatial_resolution": f"{self.grid_resolution}m",
+            "source": source,
+            "references": references,
+            "tracking_id": tracking_id,
+            "product_version": product_version,
+            "format_version": format_version,
+            "keywords": keywords,
+            "naming_authority": naming_authority,
+            "keywords_vocabulary": keywords_vocabulary,
+            "cdm_data_type": cdm_data_type,
+            "project": project,
+            "geospatial_lat_min": geospatial_lat_min,
+            "geospatial_lat_max": geospatial_lat_max,
+            "geospatial_lon_min": geospatial_lon_min,
+            "geospatial_lon_max": geospatial_lon_max,
+            "geospatial_vertical_min": geospatial_vertical_min,
+            "geospatial_vertical_max": geospatial_vertical_max,
+            "time_coverage_start": time_coverage_start,
+            "time_coverage_end": time_coverage_end,
+            "time_coverage_duration": time_coverage_duration,
+            "time_coverage_resolution": time_coverage_resolution,
+            "standard_name_vocabulary": standard_name_vocabulary,
+            "platform": platform,
+            "sensor": sensor,
+            "geospatial_lat_units": geospatial_lat_units,
+            "geospatial_lon_units": geospatial_lon_units,
+            "geospatial_lat_resolution": geospatial_lat_resolution,
+            "geospatial_lon_resolution": geospatial_lon_resolution,
+            "key_variables": key_variables
         }
         attrs.update(other_attributes)
         ds = xr.Dataset(attrs=attrs)
-        # copy the lat/lon bounds
-        for copyvar in ["lat", "lon", "crsOSGB"]:
-            ds[copyvar] = self.chuk_grid_ds[copyvar]
         return ds
 
     def load(self, from_path, add_latlon=False, add_latlon_bnds=False):
@@ -138,7 +177,7 @@ class CHUKDataSetUtils:
 
         return ds
 
-    def save(self, ds, to_path, add_latlon=False, add_latlon_bnds=False, x_chunk_size=200, y_chunk_size=200, time_chunk_size=5):
+    def save(self, ds, to_path, add_latlon=False, add_latlon_bnds=False, x_chunk_size=400, y_chunk_size=400, time_chunk_size=1):
         """
         Save a CHUK dataset to file, applying the standard chunking and compression
 
@@ -233,11 +272,12 @@ class CHUKDataSetUtils:
         :param variable_name: the name of the variable to save from the dataset
         :param to_path: the path to save the geotiff file to
         """
-        if ds.rio.crs is None:
-            # this is important if the dataset is later exported
-            ds = ds.rio.write_crs("EPSG:27700")
-        tags = CHUKMetadata.to_json(ds, variable_name)
-        ds[variable_name].rio.to_raster(to_path, tags=tags)
+        ds_crs = ds.rio.write_crs("EPSG:27700")
+        del ds_crs[variable_name].attrs["grid_mapping"] # this seems to cause a problem, why?
+        tags = CHUKMetadata.to_json(ds_crs, variable_name)
+        ds_crs[variable_name].rio.to_raster(to_path, tags=tags)
+
+
 
 
 
