@@ -25,8 +25,8 @@ class CHUKMetadata:
     expected_dataset_metadata_keys = {
         "title",
         "institution",
-        "version",
-        "Convention",
+        "product_version",
+        "Conventions",
         "summary",
         "license",
         "history",
