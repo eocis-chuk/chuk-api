@@ -62,12 +62,17 @@ def main():
         "geospatial_vertical_min": "0.0",
         "geospatial_vertical_max": "0.0",
         "project": "Earth Observation Climate Information Service (EOCIS)",
-        "key_variables": ",".join(key_variables)
+        "key_variables": ",".join(key_variables),
+        "naming_authority": "uk.ac.stfc",
+        "format_version": "EOCIS Data Standards v0.1, EOCIS CHUK Data Standards v0.1",
+        "cdm_type": "grid",
+        "standard_name_vocabulary": "CF Standard Name Table v82"
     }
 
     per_file_attributes = {
         "d1.8-land_cover.nc": {
-            "source": "UKCEH 25m land cover"
+            "source": "UKCEH 25m land cover",
+            "keywords": "Land Cover"
         }
     }
 
@@ -148,12 +153,6 @@ def main():
     utils.save(chuk_ds,join(output_folder,filename))
     utils.save_as_geotif(chuk_ds,"land_cover",join(output_folder,tiff_filename))
 
-    # ds = xr.open_dataset(filename)
-    # print(ds)
-    # ds = ds.drop_vars("crsOSGB: x y crsWGS84: lat lon")
-    # print(ds)
-
-    # ds.to_netcdf(join(output_folder,filename))
 
 
 if __name__ == '__main__':
