@@ -19,7 +19,6 @@
 
 import unittest
 import os
-import requests
 
 from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
 from eocis_chuk_api_tests.test_utils.test_data_generator import TestDataGenerator

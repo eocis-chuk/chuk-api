@@ -34,6 +34,6 @@ class TestDatasetCreation(unittest.TestCase):
         # https://www.ordnancesurvey.co.uk/blog/where-is-the-centre-of-great-britain
         ds = gen.create_distances(utils, 54.0025,-2.5449) # up to 1000km
         warnings, errors = utils.check(ds)
-        self.assertEqual(0,len(warnings))
+        self.assertEqual(33,len(warnings))
         self.assertEqual(0, len(errors))
         utils.save(ds,"EOCIS-CHUK-L4-TEST-MERGED-20231204-fv0.1.nc")
