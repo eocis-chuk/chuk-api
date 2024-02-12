@@ -19,6 +19,7 @@
 
 import numpy as np
 import xarray as xr
+import uuid
 
 class TestDataGenerator:
 
@@ -49,7 +50,10 @@ class TestDataGenerator:
         dists = radius * c * 1000
 
         ds = utils.create_new_dataset(title="Distance to the GB Centroid",
-                                      summary="The distance using the haversine formula to each CHUK grid location from the centroid of Gret Britain")
+          product_version="1.0",
+                            summary="The distance in km using the haversine formula to each CHUK grid location from the centroid of Great Britain",
+                            tracking_id=str(uuid.uuid4()))
+
         ds["distances"] = xr.DataArray(dists, dims=("y", "x"), attrs={
             "long_name": "distance to Great British centroid",
             "units": "m",
