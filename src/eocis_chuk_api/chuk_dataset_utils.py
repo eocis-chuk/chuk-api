@@ -230,7 +230,8 @@ class CHUKDataSetUtils:
 
         return ds
 
-    def save(self, ds, to_path, add_latlon=False, add_latlon_bnds=False, x_chunk_size=200, y_chunk_size=200, time_chunk_size=5):
+    def save(self, ds, to_path, add_latlon=False, add_latlon_bnds=False, x_chunk_size=200, y_chunk_size=200,
+             time_chunk_size=5, custom_encodings={}):
         """
         Save a CHUK dataset to file, applying the standard chunking and compression
 
@@ -241,30 +242,35 @@ class CHUKDataSetUtils:
         :param x_chunk_size: size of chunking in the x-dimension
         :param y_chunk_size: size of chunking in the x-dimension
         :param time_chunk_size: size of chunking in the time dimension
+        :param custom_encodings: dictionary mapping from variable names to a custom encoding to use
         :return: an xarray.Dataset object
         """
 
         encodings = {}
 
         for v in ds.variables:
-            dims = ds[v].dims
-            if "x" in dims and "y" in dims:
-                chunk_sizes = []
-                for d in dims:
-                    if d == "y":
-                        chunk_sizes.append(y_chunk_size)
-                    elif d == "x":
-                        chunk_sizes.append(x_chunk_size)
-                    elif d == "time":
-                        chunk_sizes.append(time_chunk_size)
-                    else:
-                        chunk_sizes.append(0)
+            if custom_encodings and v in custom_encodings:
+                encodings[v] = custom_encodings[v]
+            else:
+                dims = ds[v].dims
+                if "x" in dims and "y" in dims:
 
-                encodings[v] = {
-                    "zlib": True,
-                    "complevel": 5,
-                    "chunksizes" : chunk_sizes
-                }
+                    encodings[v] = {
+                        "zlib": True,
+                        "complevel": 5
+                    }
+
+                    chunk_sizes = []
+                    for d in dims:
+                        if d == "y":
+                            chunk_sizes.append(y_chunk_size)
+                        elif d == "x":
+                            chunk_sizes.append(x_chunk_size)
+                        elif d == "time":
+                            chunk_sizes.append(time_chunk_size)
+                        else:
+                            chunk_sizes.append(0)
+                    encodings[v]["chunksizes"] = chunk_sizes
 
         if add_latlon:
             ds = self.add_latlon(ds)
