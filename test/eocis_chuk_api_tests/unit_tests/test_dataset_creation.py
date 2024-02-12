@@ -36,4 +36,4 @@ class TestDatasetCreation(unittest.TestCase):
         warnings, errors = utils.check(ds)
         self.assertEqual(0,len(warnings))
         self.assertEqual(0, len(errors))
-        utils.save(ds,"distances.nc")
+        utils.save(ds,"EOCIS-CHUK-L4-TEST-MERGED-20231204-fv0.1.nc")

@@ -230,8 +230,9 @@ class CHUKDataSetUtils:
 
         return ds
 
+
     def save(self, ds, to_path, add_latlon=False, add_latlon_bnds=False, x_chunk_size=200, y_chunk_size=200,
-             time_chunk_size=5, custom_encodings={}):
+             time_chunk_size=1, custom_encodings={}):
         """
         Save a CHUK dataset to file, applying the standard chunking and compression
 
@@ -331,11 +332,12 @@ class CHUKDataSetUtils:
         :param variable_name: the name of the variable to save from the dataset
         :param to_path: the path to save the geotiff file to
         """
-        if ds.rio.crs is None:
-            # this is important if the dataset is later exported
-            ds = ds.rio.write_crs("EPSG:27700")
-        tags = CHUKMetadata.to_json(ds, variable_name)
-        ds[variable_name].rio.to_raster(to_path, tags=tags)
+        ds_crs = ds.rio.write_crs("EPSG:27700")
+        del ds_crs[variable_name].attrs["grid_mapping"] # this seems to cause a problem, why?
+        tags = CHUKMetadata.to_json(ds_crs, variable_name)
+        ds_crs[variable_name].rio.to_raster(to_path, tags=tags)
+
+
 
     def __extend_attrs(self, attrs, key, value, required=False):
         if required and not value:

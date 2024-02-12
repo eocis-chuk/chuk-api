@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import uuid
 
 #     API for managing EOCIS-CHUK data
 #
@@ -48,15 +47,18 @@ class TestDataGenerator:
         a = np.sin(dlat / 2) * np.sin(dlat / 2) + np.cos(np.radians(lats)) \
             * np.cos(np.radians(from_lat)) * np.sin(dlon / 2) * np.sin(dlon / 2)
         c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-        dists = radius * c
+        dists = radius * c * 1000
 
         ds = utils.create_new_dataset(title="Distance to the GB Centroid",
-                                      product_version="1.0",
-                                      summary="The distance in km using the haversine formula to each CHUK grid location from the centroid of Gret Britain",
-                                      tracking_id=str(uuid.uuid4()))
+          product_version="1.0",
+                            summary="The distance in km using the haversine formula to each CHUK grid location from the centroid of Great Britain",
+                            tracking_id=str(uuid.uuid4()))
+
         ds["distances"] = xr.DataArray(dists, dims=("y", "x"), attrs={
             "long_name": "distance to Great British centroid",
+            "units": "m",
             "comment": "calculated using the haversine formula",
-            "coordinates": "lat lon"
+            "coordinates": "lat lon",
+            "grid_mapping": "crsOSGB"
         })
         return ds

@@ -40,7 +40,6 @@ class TestTiffExport(unittest.TestCase):
         # Whitendale Hanging Stones is the centroid of Great Britain
         # https://www.ordnancesurvey.co.uk/blog/where-is-the-centre-of-great-britain
         ds = gen.create_distances(utils,54.0025,-2.5449)
-        utils.save_as_geotif(ds,"distances","distances.tif")
-        utils.save(ds, "distances.nc")
+        utils.save_as_geotif(ds,"distances","EOCIS-CHUK-L4-TEST-MERGED-20231204-fv0.1.nc")
 
 
