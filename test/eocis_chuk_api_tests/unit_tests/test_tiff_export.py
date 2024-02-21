@@ -19,26 +19,40 @@
 
 import unittest
 import os
+import uuid
 
-from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+from eocis_chuk_api import CHUKDataSetUtils
 from eocis_chuk_api_tests.test_utils.test_data_generator import TestDataGenerator
+from eocis_chuk_api_tests.test_utils.test_utils import download_test_file
 
-folder = os.path.split(__file__)[0]
-grid_path = os.path.join(folder,"..","..","..","EOCIS-CHUK-GRID-1000M-v0.4.nc")
-
-if not os.path.exists(grid_path):
-    r = requests.get("https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-1000M-v0.4.nc", allow_redirects=True)
-    with open(grid_path,"wb") as f:
-        f.write(r.content)
 
 class TestTiffExport(unittest.TestCase):
 
     def test1(self):
+        grid_path = download_test_file(TestDataGenerator.get_tmp_folder(), "EOCIS-CHUK-GRID-1000M-TEST-v0.4.nc")
         utils = CHUKDataSetUtils(grid_path)
+
         gen = TestDataGenerator(utils)
         # Whitendale Hanging Stones is the centroid of Great Britain
         # https://www.ordnancesurvey.co.uk/blog/where-is-the-centre-of-great-britain
-        ds = gen.create_distances(utils,54.0025,-2.5449)
-        utils.save_as_geotif(ds,"distances","EOCIS-CHUK-L4-TEST-MERGED-20231204-fv0.1.nc")
+
+        ds = utils.create_new_dataset(title="Distance to the GB Centroid",
+                                      product_version="1.0",
+                                      summary="The distance in km using the haversine formula to each CHUK grid location from the centroid of Great Britain",
+                                      tracking_id=str(uuid.uuid4()))
+
+        dists = gen.create_distances(54.0025, -2.5449)
+        utils.add_variable(ds, variable_name="distances",
+                           data=dists,
+                           long_name="distance to Great British centroid",
+                           units="km",
+                           comment="calculated using the haversine formula")
+
+
+        filename = utils.create_filename("CHUK", processing_level="L4", product_type="TEST", product_string="UNITTEST",
+                                         datetime="2024", version="1.0", suffix=".tif")
+
+        tmp_folder = TestDataGenerator.get_tmp_folder()
+        utils.save_as_geotif(ds,"distances",os.path.join(tmp_folder,filename))
 
 

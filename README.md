@@ -26,6 +26,7 @@ conda create -n chuk_api_env python=3.10
 conda activate chuk_api_env
 conda install rioxarray
 conda install netcdf4
+conda install requests
 ```
 
 Clone this repo and run:
@@ -53,7 +54,7 @@ https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/
 ```python
 import xarray as xr
 import numpy as np
-from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+from eocis_chuk_api import CHUKDataSetUtils
 utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
 chuk_ds = utils.create_new_dataset(
      title="My CHUK dataset",

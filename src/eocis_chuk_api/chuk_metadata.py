@@ -20,8 +20,8 @@
 import copy
 import numpy as np
 
-class CHUKMetadata:
 
+class CHUKMetadata:
     expected_dataset_metadata_keys = {
         "title",
         "institution",
@@ -39,8 +39,6 @@ class CHUKMetadata:
         "keywords",
         "id",
         "naming_authority",
-        "keywords_vocabulary",
-        "cdm_data_type",
         "comment",
         "date_created",
         "creator_url",
@@ -57,7 +55,6 @@ class CHUKMetadata:
         "time_coverage_end",
         "time_coverage_duration",
         "time_coverage_resolution",
-        "standard_name_vocabulary",
         "platform",
         "sensor",
         "spatial_resolution",
@@ -70,19 +67,19 @@ class CHUKMetadata:
 
     @staticmethod
     def __decode4json(o):
-        if isinstance(o,dict):
+        if isinstance(o, dict):
             for key in o:
                 o[key] = CHUKMetadata.__decode4json(o[key])
             return o
-        elif isinstance(o,list):
+        elif isinstance(o, list):
             for idx in range(len(o)):
                 o[idx] = CHUKMetadata.__decode4json(o[idx])
             return o
-        elif isinstance(o,np.float32):
+        elif isinstance(o, np.float32):
             return float(o)
-        elif isinstance(o,np.int32) or isinstance(o,np.int16) or isinstance(o,np.int8):
+        elif isinstance(o, np.int32) or isinstance(o, np.int16) or isinstance(o, np.int8):
             return int(o)
-        elif isinstance(o,np.ndarray):
+        elif isinstance(o, np.ndarray):
             return CHUKMetadata.__decode4json(o.tolist())
         else:
             return o
@@ -103,9 +100,6 @@ class CHUKMetadata:
         errors = []
         for key in CHUKMetadata.expected_dataset_metadata_keys:
             if key not in ds.attrs:
-                warnings.append(("missing_global_attribute",key))
+                warnings.append(("missing_global_attribute", key))
 
         return warnings, errors
-
-
-

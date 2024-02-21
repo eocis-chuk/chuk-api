@@ -1,0 +1,17 @@
+site_name: "eocis_chuk_api documentation"
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+
+docs_dir: docs
+
+site_dir: ../docs
+
+# mkdocis installation:
+# pip install mkdocs
+# python -m pip install "mkdocstrings[python]"
+# python -m pip install mkdocs-material
+

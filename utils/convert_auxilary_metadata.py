@@ -18,7 +18,7 @@
 #     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import xarray as xr
-from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+from eocis_chuk_api import CHUKDataSetUtils
 import argparse
 from os.path import split, join
 import os
