@@ -280,7 +280,7 @@ class CHUKDataSetUtils:
         return ds
 
     def add_variable(self, to_dataset: xr.Dataset, data: np.array, variable_name: str, standard_name: str = None,
-                     long_name: str = None, units: str = None, source: str = None, **other_attrs):
+                     long_name: str = None, units: str = None, source: str = None, **other_attrs:dict):
         """
         Add a new variable to a dataset.  The dataset is updated in-place.
 

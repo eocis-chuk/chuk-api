@@ -1,19 +1,36 @@
+# -*- coding: utf-8 -*-
+
+#     API for managing EOCIS-CHUK data
+#
+#     Copyright (C) 2023  EOCIS and National Centre for Earth Observation (NCEO)
+#
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 import unittest
-
-import unittest
-import os
 import uuid
 import numpy as np
+import xarray as xr
 
 from eocis_chuk_api import CHUKAuxilaryUtils, CHUKDataSetUtils
 from eocis_chuk_api_tests.test_utils.test_data_generator import TestDataGenerator
 from eocis_chuk_api_tests.test_utils.test_utils import download_test_file
+from eocis_chuk_api.chuk_auxilary_utils import Mask
 
+class TestAuxSupport(unittest.TestCase):
 
-class TestTiffExport(unittest.TestCase):
-
-    def test1(self):
+    def test_usage(self):
         grid_path = download_test_file(TestDataGenerator.get_tmp_folder(),"EOCIS-CHUK-GRID-1000M-TEST-v0.4.nc")
         utils = CHUKDataSetUtils(grid_path)
 
@@ -54,4 +71,28 @@ class TestTiffExport(unittest.TestCase):
         print(f"Built mean max temp={mean_urban_max_temps}")
         print(f"Freshwater mean max temp={mean_freshwater_max_temps}")
 
+    def test_mask_combinations(self):
 
+        class MockMask(Mask):
+
+            def __init__(self, data_array):
+                self.data_array = data_array
+
+            def to_array(self):
+                return self.data_array
+
+        mm1 = MockMask(xr.DataArray(np.array([[True,True],[False,False]]), dims=("y","x")))
+        mm2 = MockMask(xr.DataArray(np.array([[True,False],[True,False]]), dims=("y", "x")))
+
+        and_mask = CHUKAuxilaryUtils.combine_masks_and(mm1,mm2)
+        print(and_mask.to_array())
+        self.assertTrue(np.array_equal(and_mask.to_array().data,np.array([[True,False],[False,False]])))
+
+        or_mask = CHUKAuxilaryUtils.combine_masks_or(mm1, mm2)
+        print(or_mask.to_array())
+        self.assertTrue(np.array_equal(or_mask.to_array().data,
+                                       np.array([[True,True], [True,False]])))
+
+        not_mask = CHUKAuxilaryUtils.not_mask(mm1)
+        print(not_mask.to_array())
+        self.assertTrue(np.array_equal(not_mask.to_array().data,np.array([[False,False],[True,True]])))

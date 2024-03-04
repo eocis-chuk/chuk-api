@@ -77,7 +77,7 @@ population_data = np.zeros(utils.get_grid_shape())
 chuk_ds["squirrel_population"] = xr.DataArray(population_data,dims=("y","x"), attrs={
    "long_name":"estimated_squirrel_population",
    "coordinates": "lat lon",
-    "grid_mapping": "crsOSGB"
+   "grid_mapping": "crsOSGB"
 })
 
 # save the dataset
@@ -87,7 +87,7 @@ utils.save(chuk_ds, "EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")
 ### Export a CHUK variable from NetCDF4 to geotiff
 
 ```python
-from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+from eocis_chuk_api import CHUKDataSetUtils
 
 utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")
@@ -102,6 +102,19 @@ from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
 utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-SQUIRRELPOPULATION-100M-v0.1.nc")
 (warnings, errors) = utils.check(ds)
+```
+
+### Create a boolean mask from a CHUK Auxilary file
+
+```python
+from eocis_chuk_api import CHUKAuxilaryUtils
+
+# build a mask with all pixels containing power lines or substations, whatever the voltage
+substation_mask = CHUKAuxilaryUtils.create_mask("d1.11-power.nc", "powerline", mask_values="*kV")
+powerline_mask = CHUKAuxilaryUtils.create_mask("d1.11-power.nc", "powerline", mask_values="*kV")
+combined_mask = CHUKAuxilaryUtils.combine_masks_or(powerline_mask, substation_mask)
+print(combined_mask.count(),combined_mask.fraction())
+bool_array = combined_mask.to_array()
 ```
 
 
