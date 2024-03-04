@@ -1,22 +1,19 @@
 # chuk-api
 
-Python API for working with CHUK datasets
+Python API for working with CHUK datasets built on (xarray)[https://xarray.dev/]
+
+CHUK datasets provide Earth Observation-derived climate data and relevant auxilary data for the UK at 100m resolution, developed for the (EOCIS Project)[https://eocis.org]
+
+The file format for storing CHUK data is NetCDF4.
 
 ## Objectives
 
-* Producer API
-  * Assist with creation of CHUK data files
 * Consumer API
-  * Create masked based on queries - eg create mask for all pixels containing power lines in Wales
-  * This will be based on datasets created for the CHUK project by the IEA
-
-## Currently Supported functionality (Producer API)
-
-* Load from netcdf4
-* Check dimensions against reference grid
-* Check metadata (provisional)
-* Export CHUK data to geotiff, preserving metadata
-
+  * Create masked based on queries - for example *create a mask for all cells containing power lines in Wales*
+  * Designed to be used with CHUK datasets describing UK administrative boundaries, infrastructure, demographic data, due to be released soon.
+* Producer API
+  * Assist with creation and maintenance of CHUK data files
+  
 ## Installation
 
 This package depends on rioxarray:
@@ -35,7 +32,7 @@ Clone this repo and run:
 pip install .
 ```
 
-Download CHUK grid reference file
+Download CHUK grid reference file (latest version is v0.4):
 
 ```
 wget https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-100M-v0.4.nc
@@ -46,6 +43,10 @@ wget https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-
 CHUK data files will be available from:
 
 https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/
+
+Full API documentation:
+
+https://eocis-chuk.github.io/chuk-api/
 
 ## Usage
 
@@ -66,9 +67,7 @@ chuk_ds = utils.create_new_dataset(
      history = "Developed from the squirrel population dataset",
      comment = "This is a made up example",
      creator_url = "https:///www.example.com",
-     creator_name = "Institute of Squirrel Studies",
-     creator_email = "enquiries@squirrel-studies.org.uk",
-     creator_processing_institution = "Institute of Squirrel Studies")
+     creator_name = "Institute of Biological Studies")
 # create an array to hold the data
 population_data = np.zeros(utils.get_grid_shape())
 # populate the data
@@ -84,7 +83,7 @@ chuk_ds["squirrel_population"] = xr.DataArray(population_data,dims=("y","x"), at
 utils.save(chuk_ds, "EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")
 ```
 
-### Export a CHUK variable from NetCDF4 to geotiff
+### Export a CHUK variable from a NetCDF4 dataset to geotiff
 
 ```python
 from eocis_chuk_api import CHUKDataSetUtils
@@ -97,7 +96,7 @@ utils.save_as_geotif(ds, "squirrel_population", "EOCIS-CHUK-L4-SQUIRRELPOP-MERGE
 ### Check a dataset against the reference grid
 
 ```python
-from eocis_chuk_api.chuk_dataset_utils import CHUKDataSetUtils
+from eocis_chuk_api import CHUKDataSetUtils
 
 utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-SQUIRRELPOPULATION-100M-v0.1.nc")
