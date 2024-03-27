@@ -28,9 +28,13 @@ def download_test_file(to_local_folder, filename):
 
     if not os.path.exists(local_path):
         import requests
-        r = requests.get("https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/test_files/"+filename, allow_redirects=True)
-        with open(local_path,"wb") as f:
-            f.write(r.content)
+        url = "https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/test_files/"+filename
+        r = requests.get(url, allow_redirects=True)
+        if r.ok:
+            with open(local_path,"wb") as f:
+                f.write(r.content)
+        else:
+            raise Exception(f"Unable to download {url}")
 
     return local_path
 

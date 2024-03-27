@@ -32,7 +32,7 @@ class CHUKDataSetUtils:
         >>> import xarray as xr
         >>> import numpy as np
         >>> from eocis_chuk_api import CHUKDataSetUtils
-        >>> utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc")
+        >>> utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v1.0.nc")
         >>> chuk_ds = utils.create_new_dataset(
              title="My CHUK dataset",
              institution = "EOCIS CHUK",

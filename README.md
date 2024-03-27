@@ -32,10 +32,10 @@ Clone this repo and run:
 pip install .
 ```
 
-Download CHUK grid reference file (latest version is v0.4):
+Download CHUK grid reference file (latest version is v1.0):
 
 ```
-wget https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-100M-v0.4.nc
+wget https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/EOCIS-CHUK-GRID-100M-v1.0.nc
 ```
 
 ## Links to Resources
@@ -56,7 +56,7 @@ https://eocis-chuk.github.io/chuk-api/
 import xarray as xr
 import numpy as np
 from eocis_chuk_api import CHUKDataSetUtils
-utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
+utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v1.0.nc") # downloaded as described above
 chuk_ds = utils.create_new_dataset(
      title="My CHUK dataset",
      institution = "EOCIS CHUK",
@@ -88,7 +88,7 @@ utils.save(chuk_ds, "EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")
 ```python
 from eocis_chuk_api import CHUKDataSetUtils
 
-utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
+utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v1.0.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")
 utils.save_as_geotif(ds, "squirrel_population", "EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.TIF")
 ```
@@ -98,7 +98,7 @@ utils.save_as_geotif(ds, "squirrel_population", "EOCIS-CHUK-L4-SQUIRRELPOP-MERGE
 ```python
 from eocis_chuk_api import CHUKDataSetUtils
 
-utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v0.4.nc") # downloaded as described above
+utils = CHUKDataSetUtils("EOCIS-CHUK-GRID-100M-v1.0.nc") # downloaded as described above
 ds = utils.load("EOCIS-CHUK-SQUIRRELPOPULATION-100M-v0.1.nc")
 (warnings, errors) = utils.check(ds)
 ```

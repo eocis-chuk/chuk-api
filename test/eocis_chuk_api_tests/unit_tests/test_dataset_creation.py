@@ -28,7 +28,7 @@ from eocis_chuk_api_tests.test_utils.test_utils import download_test_file
 class TestDatasetCreation(unittest.TestCase):
 
     def test1(self):
-        grid_path = download_test_file(TestDataGenerator.get_tmp_folder(), "EOCIS-CHUK-GRID-1000M-TEST-v0.4.nc")
+        grid_path = download_test_file(TestDataGenerator.get_tmp_folder(), "EOCIS-CHUK-GRID-1000M-v1.0.nc")
         utils = CHUKDataSetUtils(grid_path)
 
         gen = TestDataGenerator(utils)
