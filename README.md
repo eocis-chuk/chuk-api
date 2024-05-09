@@ -21,9 +21,9 @@ This package depends on rioxarray:
 ```
 conda create -n chuk_api_env python=3.10
 conda activate chuk_api_env
-conda install rioxarray
-conda install netcdf4
-conda install requests
+conda install -c conda-forge rioxarray
+conda install -c conda-forge netcdf4
+conda install -c conda-forge requests
 ```
 
 Clone this repo and run:

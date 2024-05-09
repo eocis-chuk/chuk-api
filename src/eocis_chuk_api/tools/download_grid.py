@@ -31,7 +31,7 @@ def main():
     parser = argparse.ArgumentParser(description="download_grid.py: a utility for downloading the CHUK grid from JASMIN")
 
     parser.add_argument("output_path", help="path to output the downloaded CHUK netcdf4 file")
-    parser.add_argument("--resolution", choices=[100,1000], type=int, help="resolution in metres for the gird file, must be either 100 or 1000", default=100)
+    parser.add_argument("--resolution", choices=[100,1000], type=int, help="resolution in metres for the grid file, must be either 100 or 1000", default=100)
 
     args = parser.parse_args()
 

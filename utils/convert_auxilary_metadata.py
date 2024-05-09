@@ -42,7 +42,7 @@ constants = {
 }
 
 per_file_attributes = {
-    "d1.1-land_water.nc": {
+    "d1.1-land-water.nc": {
         "source": "UKCEH 10m land cover",
         "keywords": "Land, Water, River, Lake"
     },
@@ -77,7 +77,7 @@ per_file_attributes = {
 }
 
 per_file_product_types = {
-    "d1.1-land_water.nc": "LANDWATER",
+    "d1.1-land-water.nc": "LANDWATER",
     "d1.2-countries.nc": "COUNTRY",
     "d1.3-counties.nc": "COUNTY",
     "d1.4-parishes.nc": "PARISH",
@@ -125,9 +125,20 @@ mapping = {
 
 def convert(input_folder, input_filename, grid_path, output_folder):
     print(f"Processing input file {input_filename}")
+
+    product_type = per_file_product_types[input_filename]
+
     path = os.path.join(input_folder, input_filename)
 
     ds = xr.open_dataset(path)
+
+    version = ds.attrs["version"]
+
+    output_filename = f"EOCIS-AUXILARY-L4-{product_type}-MERGED-2023-fv{version}.nc"
+
+    if os.path.exists(os.path.join(output_folder, output_filename)):
+        print(f"Output file {output_filename} already exists!  Skipping...")
+        return
 
     # compile a list of variables
     key_variables = []
@@ -153,7 +164,7 @@ def convert(input_folder, input_filename, grid_path, output_folder):
             if key not in mapped_attrs:
                 mapped_attrs[key] = per_file_attributes[input_filename][key]
 
-    product_type = per_file_product_types[input_filename]
+
     history = ds.attrs.get("history", "")
     if history:
         history += ", "
@@ -178,9 +189,7 @@ def convert(input_folder, input_filename, grid_path, output_folder):
             if vname.endswith("str"):
                 # apply a custom encoding for these string variables, chunking causes problems
                 custom_encodings[vname] = { "zlib": True, "complevel": 5 }
-    version = ds.attrs["version"]
 
-    output_filename = f"EOCIS-AUXILARY-L4-{product_type}-MERGED-2023-fv{version}.nc"
 
     utils.save(chuk_ds, join(output_folder, output_filename), custom_encodings=custom_encodings)
     print(f"Written output file {output_filename}")
