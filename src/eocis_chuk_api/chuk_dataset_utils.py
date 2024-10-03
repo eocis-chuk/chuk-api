@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import datetime
+
 import numpy as np
 #     API for managing EOCIS-CHUK data
 #
@@ -336,17 +338,13 @@ class CHUKDataSetUtils:
         """
         ds = xr.open_dataset(from_path, decode_coords="all")
 
-        if add_latlon:
-            ds = self.add_latlon(ds)
-
-        if add_latlon_bnds:
-            ds = self.add_latlon_bnds(ds)
+        self.extend_latlon(ds, add_latlon=add_latlon, add_latlon_bnds=add_latlon_bnds)
 
         return ds
 
     def save(self, ds: xarray.Dataset, to_path: str, add_latlon: bool = False, add_latlon_bnds: bool = False,
              x_chunk_size: int = 200, y_chunk_size: int = 200,
-             time_chunk_size: int = 1, custom_encodings: dict = {}):
+             time_chunk_size: int = 1, custom_encodings: dict = {}, override_encodings: dict={}):
         """
         Save a CHUK dataset to file, applying the standard chunking and compression
 
@@ -375,6 +373,14 @@ class CHUKDataSetUtils:
                         "complevel": 5
                     }
 
+                    if v in override_encodings:
+                        for (name,value) in override_encodings[v].items():
+                            if value is None:
+                                if name in encodings:
+                                    del encodings[v][name]
+                            else:
+                                encodings[v][name] = value
+
                     chunk_sizes = []
                     for d in dims:
                         if d == "y":
@@ -387,15 +393,26 @@ class CHUKDataSetUtils:
                             chunk_sizes.append(0)
                     encodings[v]["chunksizes"] = chunk_sizes
 
-        if add_latlon:
-            ds = self.add_latlon(ds)
+        self.extend_latlon(ds, add_latlon=add_latlon, add_latlon_bnds=add_latlon_bnds)
 
-        if add_latlon_bnds:
-            ds = self.add_latlon_bnds(ds)
 
         # ds = ds.rio.write_crs("EPSG:27700",grid_mapping_name="crsOSGB")
 
         ds.to_netcdf(to_path, encoding=encodings)
+
+    def extend_latlon(self, ds, add_latlon=False, add_latlon_bnds=False):
+        if add_latlon:
+            self.add_latlon(ds)
+
+        if add_latlon_bnds:
+            self.add_latlon_bnds(ds)
+
+        if add_latlon:
+            for v in ["lat", "lon"]:
+                # remove bounds if no such variable exists
+                bounds = ds[v].attrs.get("bounds",None)
+                if bounds and bounds not in ds.variables:
+                    del ds[v].attrs["bounds"]
 
     def check(self, ds: xarray.Dataset) -> ([(str, str)], [(str, str)]):
         """

@@ -16,14 +16,13 @@ The file format for storing CHUK data is NetCDF4.
   
 ## Installation
 
-This package depends on rioxarray:
+Installation into a miniforge enviromnent is suggested.  See [https://github.com/conda-forge/miniforge](https://github.com/conda-forge/miniforge) for installing miniforge.
+
 
 ```
-conda create -n chuk_api_env python=3.10
-conda activate chuk_api_env
-conda install -c conda-forge rioxarray
-conda install -c conda-forge netcdf4
-conda install -c conda-forge requests
+mamba create -n chuk_api_env python=3.10
+mamba activate chuk_api_env
+mamba install rioxarray netcdf4 requests cfchecker
 ```
 
 Clone this repo and run:
