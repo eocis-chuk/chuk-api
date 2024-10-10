@@ -343,7 +343,7 @@ class CHUKDataSetUtils:
         return ds
 
     def save(self, ds: xarray.Dataset, to_path: str, add_latlon: bool = False, add_latlon_bnds: bool = False,
-             x_chunk_size: int = 200, y_chunk_size: int = 200,
+             x_chunk_size: int = 1000, y_chunk_size: int = 1000,
              time_chunk_size: int = 1, custom_encodings: dict = {}, override_encodings: dict={}):
         """
         Save a CHUK dataset to file, applying the standard chunking and compression
