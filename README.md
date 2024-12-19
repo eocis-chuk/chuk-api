@@ -47,6 +47,8 @@ Full API documentation:
 
 https://eocis-chuk.github.io/chuk-api/
 
+[Download CHUK Data Standards Document (latest version v1.1)](docs_src/EOCIS_CHUK_data_standards_v1.1.pdf)
+
 ## Usage
 
 ### Create a CHUK dataset
