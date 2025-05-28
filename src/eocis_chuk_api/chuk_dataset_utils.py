@@ -489,7 +489,7 @@ class CHUKDataSetUtils:
             # this seems to cause a problem, why?
             del ds_crs[variable_name].attrs["grid_mapping"]
         tags = CHUKMetadata.to_json(ds_crs, variable_name)
-        ds_crs[variable_name].rio.to_raster(to_path, tags=tags)
+        ds_crs[variable_name].rio.to_raster(to_path, tags=tags, driver="COG")
 
     def __extend_attrs(self, attrs, key, value, required=None):
         if required and value == "" or value is None:
