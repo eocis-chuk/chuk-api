@@ -53,6 +53,6 @@ class TestTiffExport(unittest.TestCase):
                                          datetime="2024", version="1.0", suffix=".tif")
 
         tmp_folder = TestDataGenerator.get_tmp_folder()
-        utils.save_as_geotif(ds,"distances",os.path.join(tmp_folder,filename))
+        utils.save_as_geotiff(ds,"distances",os.path.join(tmp_folder,filename))
 
 

@@ -20,6 +20,8 @@
 import unittest
 import uuid
 import os
+import numpy as np
+import xarray as xr
 
 from eocis_chuk_api import CHUKDataSetUtils
 from eocis_chuk_api_tests.test_utils.test_data_generator import TestDataGenerator
@@ -72,3 +74,32 @@ class TestDatasetCreation(unittest.TestCase):
         filename = utils.create_filename("CHUK",processing_level="L4",product_type="TEST", product_string="UNITTEST", datetime="2024", version="1.0")
         tmp_folder = TestDataGenerator.get_tmp_folder()
         utils.save(ds,os.path.join(tmp_folder,filename))
+
+    def test_doc_example(self):
+        grid_path = download_test_file(TestDataGenerator.get_tmp_folder(), "EOCIS-CHUK-GRID-100M-v1.0.nc")
+        utils = CHUKDataSetUtils(grid_path)  # downloaded as described above
+        chuk_ds = utils.create_new_dataset(
+            title="My CHUK dataset",
+            institution="EOCIS CHUK",
+            Conventions="CF-1.10",
+            tracking_id="12345678",
+            product_version="1.0",
+            summary="Shows estimates of the squirrel population in each CHUK grid cell",
+            license="Creative Commons Licence by attribution (https://creativecommons.org/licenses/by/4.0/)",
+            history="Developed from the squirrel population dataset",
+            comment="This is a made up example",
+            creator_url="https:///www.example.com",
+            creator_name="Institute of Biological Studies")
+        # create an array to hold the data
+        population_data = np.zeros(utils.get_grid_shape())
+        # populate the data
+
+        # attach the data
+        chuk_ds["squirrel_population"] = xr.DataArray(population_data, dims=("y", "x"), attrs={
+            "long_name": "estimated_squirrel_population",
+            "coordinates": "lat lon",
+            "grid_mapping": "crsOSGB"
+        })
+
+        # save the dataset
+        utils.save(chuk_ds, "EOCIS-CHUK-L4-SQUIRRELPOP-MERGED-20231204-v0.1.nc")

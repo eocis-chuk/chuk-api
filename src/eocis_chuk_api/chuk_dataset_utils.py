@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
 
-import numpy as np
 #     API for managing EOCIS-CHUK data
 #
 #     Copyright (C) 2023  EOCIS and National Centre for Earth Observation (NCEO)
@@ -21,8 +19,9 @@ import numpy as np
 
 import xarray as xr
 import xarray
-from .chuk_metadata import CHUKMetadata
+import numpy as np
 
+from .chuk_metadata import CHUKMetadata
 
 class CHUKDataSetUtils:
     """Provide utility functions for working with CHUK datasets, based on xarray data structures.
@@ -38,8 +37,9 @@ class CHUKDataSetUtils:
         >>> chuk_ds = utils.create_new_dataset(
              title="My CHUK dataset",
              institution = "EOCIS CHUK",
-             version = "1.0",
-             convention = "CF-1.10",
+             Conventions = "CF-1.10",
+             tracking_id = "12345678",
+             product_version = "1.0",
              summary = "Shows estimates of the squirrel population in each CHUK grid cell",
              license = "Creative Commons Licence by attribution (https://creativecommons.org/licenses/by/4.0/)",
              history = "Developed from the squirrel population dataset",
@@ -476,6 +476,18 @@ class CHUKDataSetUtils:
 
     @staticmethod
     def save_as_geotif(ds: xarray.Dataset, variable_name: str, to_path: str):
+        """
+        Save a CHUK dataset to a geotiff.  DEPRECATED - use save_as_geotiff
+
+        Args:
+            ds: the CHUK dataset
+            variable_name: the name of the variable to save from the dataset
+            to_path: the path to save the geotiff file to
+        """
+        return CHUKDataSetUtils.save_as_geotiff(ds, variable_name, to_path)
+
+    @staticmethod
+    def save_as_geotiff(ds: xarray.Dataset, variable_name: str, to_path: str):
         """
         Save a CHUK dataset to a geotiff
 

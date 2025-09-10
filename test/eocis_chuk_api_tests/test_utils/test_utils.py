@@ -28,7 +28,7 @@ def download_test_file(to_local_folder, filename):
 
     if not os.path.exists(local_path):
         import requests
-        url = "https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/test_files/"+filename
+        url = "https://gws-access.jasmin.ac.uk/public/nceo_uor/eocis-chuk/"+filename
         r = requests.get(url, allow_redirects=True)
         if r.ok:
             with open(local_path,"wb") as f:
